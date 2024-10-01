@@ -10,11 +10,12 @@ service:
   port: 8080
   
 postgres:
+  secretName: "" # Add name of existing secret if any
   host: "postgresql.default.svc.cluster.local"
   port: 5432
   database: "postgres"
   user: "postgres"
-  password: "" # Set at Helm installation time
+  password: "" # Set at Helm installation time if there's no existing secret
 
 ingress:
   enabled: false

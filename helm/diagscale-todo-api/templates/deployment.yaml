@@ -33,5 +33,5 @@ spec:
           - name: POSTGRES_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: postgres-secret
+                name: {{ if .Values.postgresql.secretName }}{{ .Values.postgresql.secretName }}{{ else }}{{ include "my-api-backend.fullname" . }}-postgres-secret{{ end }}
                 key: password
