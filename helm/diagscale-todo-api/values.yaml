@@ -1,0 +1,39 @@
+replicaCount: 2
+
+image:
+  repository: <to-be-decided>
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+  
+postgres:
+  host: "postgresql.default.svc.cluster.local"
+  port: 5432
+  database: "postgres"
+  user: "postgres"
+  password: "" # Set at Helm installation time
+
+ingress:
+  enabled: false
+  hosts:
+    - host: api.example.com
+      paths:
+        - /
+  tls: []
+
+resources: {}
+# resources:
+#   limits:
+#     cpu: 100m
+#     memory: 128Mi
+#   requests:
+#     cpu: 100m
+#     memory: 128Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
