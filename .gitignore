@@ -1,1 +1,3 @@
 compose-secrets
+local
+.env
