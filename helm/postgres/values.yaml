@@ -1,3 +1,0 @@
-primary:
-  service:
-    type: LoadBalancer

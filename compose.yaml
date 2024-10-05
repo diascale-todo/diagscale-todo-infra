@@ -1,0 +1,59 @@
+services:
+  server:
+    image: fetcher
+    container_name: fetcher
+    ports:
+      - 3000:3000
+    secrets:
+      - db-password
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=diagscale_todo
+      - POSTGRES_PORT=5432
+      - POSTGRES_SSLMODE=disable
+    depends_on:
+      - postgres
+      - db-prep
+
+  postgres:
+    image: postgres
+    restart: always
+    secrets:
+      - db-password
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=diagscale_todo
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+      - POSTGRES_USER=postgres
+    expose:
+      - 5432
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# Service to prepare the DB
+  db-prep:
+    image: db-prep
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+      - POSTGRES_DB=diagscale_todo
+    depends_on:
+      postgres:
+        condition: service_healthy
+    secrets:
+      - db-password
+
+volumes:
+  db-data:
+
+secrets:
+  db-password:
+    file: compose-secrets/db/password.txt
