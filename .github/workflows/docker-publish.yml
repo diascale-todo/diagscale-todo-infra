@@ -7,7 +7,7 @@ name: Docker
 
 on:
   schedule:
-    - cron: '17 4 * * *'
+    # - cron: '17 4 * * *'
   push:
     branches: [ "release" ]
     # Publish semver tags as releases.
@@ -97,12 +97,18 @@ jobs:
       # repository is public to avoid leaking data.  If you would like to publish
       # transparency data even for private images, pass --force to cosign below.
       # https://github.com/sigstore/cosign
-      - name: Sign the published Docker image
+          # - name: Sign the published Docker image
+          #   if: ${{ github.event_name != 'pull_request' }}
+          #   env:
+          #     # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
+          #     TAGS: ${{ steps.meta.outputs.tags }}
+          #     DIGEST: ${{ steps.build-and-push.outputs.digest }}
+          #   # This step uses the identity token to provision an ephemeral certificate
+          #   # against the sigstore community Fulcio instance.
+          #   run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+      - name: Sign the published Docker image (db-prep)
         if: ${{ github.event_name != 'pull_request' }}
         env:
-          # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
           TAGS: ${{ steps.meta.outputs.tags }}
-          DIGEST: ${{ steps.build-and-push.outputs.digest }}
-        # This step uses the identity token to provision an ephemeral certificate
-        # against the sigstore community Fulcio instance.
+          DIGEST: ${{ steps.build-and-push-db-prep.outputs.digest }}
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
