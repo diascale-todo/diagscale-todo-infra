@@ -1,7 +1,7 @@
 services:
   server:
-    image: fetcher
-    container_name:  "${FETCHER_IMAGE_REPO}:${FETCHER_IMAGE_TAG}"
+    image: "${FETCHER_IMAGE_REPO}:${FETCHER_IMAGE_TAG}"
+    container_name: fetcher
     ports:
       - 3000:3000
     secrets:
