@@ -112,3 +112,9 @@ jobs:
         env:
           TAGS: ${{ steps.meta.outputs.tags }}
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}
+      - name: Send deploy repository dispatch signal
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.PAT }}
+          repository: diascale-todo/diagscale-todo-infra
+          event-type:  deploy
