@@ -12,13 +12,12 @@ jobs:
     steps:
       - name: Deploy to VM using Docker Compose
         uses: appleboy/ssh-action@v0.1.5  
+        env:
+         GHCR_PAT: ${{ secrets.PAT }}
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
-          # Pass the PAT as an environment variable
-          envs: |
-            GHCR_PAT=${{ secrets.PAT }}
           script: |
             set -e  # Exit on error
 
