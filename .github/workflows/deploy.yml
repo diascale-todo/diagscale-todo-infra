@@ -19,6 +19,12 @@ jobs:
           script: |
             set -e  # Exit on error
 
+            # Export GHCR_PAT environment variable
+            export GHCR_PAT=${{ secrets.PAT }}
+
+            # Login to GHCR
+            echo $GHCR_PAT | docker login ghcr.io -u USERNAME --password-stdin
+
             # Change to the directory where docker-compose.yml is located
             cd /home/huvu/diagscale-todo/diagscale-todo-infra
 
