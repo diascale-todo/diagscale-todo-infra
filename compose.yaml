@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   traefik:
     image: traefik:v2.9
@@ -9,19 +11,18 @@ services:
       - "80:80"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - app-network
+
   fetcher:
     image: "${FETCHER_IMAGE_REPO}:${FETCHER_IMAGE_TAG}"
     container_name: fetcher
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fetcher.rule=PathPrefix(`/fetcher`)"
-      - "traefik.http.services.fetcher.loadbalancer.fetcher.port=3000"
-    networks:
-      - app-network
-    ports:
-      - 3000:3000
+      - "traefik.http.routers.fetcher.middlewares=strip-fetcher"
+      - "traefik.http.middlewares.strip-fetcher.stripprefix.prefixes=/fetcher"
+      - "traefik.http.services.fetcher.loadbalancer.server.port=3000"
+#    ports:
+#      - 3000:3000
     secrets:
       - db-password
     environment:
@@ -33,7 +34,7 @@ services:
       - POSTGRES_SSLMODE=disable
     depends_on:
       - postgres
-      - db-prep
+      - db-prep 
 
   postgres:
     image: postgres
@@ -47,14 +48,13 @@ services:
       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
       - POSTGRES_USER=postgres
     expose:
-      - 5432
+      - "5432"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
-# Service to prepare the DB
   db-prep:
     image: "${DB_PREP_IMAGE_REPO}:${DB_PREP_IMAGE_TAG}"
     environment:
@@ -68,11 +68,10 @@ services:
         condition: service_healthy
     secrets:
       - db-password
-networks:
-  app-network:
-    driver: bridge
+
 volumes:
   db-data:
+
 secrets:
   db-password:
     file: compose-secrets/db/password.txt
