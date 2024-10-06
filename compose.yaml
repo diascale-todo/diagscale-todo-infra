@@ -68,10 +68,11 @@ services:
         condition: service_healthy
     secrets:
       - db-password
-
+networks:
+  app-network:
+    driver: bridge
 volumes:
   db-data:
-
 secrets:
   db-password:
     file: compose-secrets/db/password.txt
