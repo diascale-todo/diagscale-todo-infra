@@ -13,7 +13,7 @@ jobs:
       - name: Deploy to VM using Docker Compose
         uses: appleboy/ssh-action@v0.1.5  
         env:
-         GHCR_PAT: ${{ secrets.PAT }}
+         GHCR_PAT: ${{ secrets.GHCR_PAT }}
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
