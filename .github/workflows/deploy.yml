@@ -1,4 +1,4 @@
-# Workflow to deploy uppon a repository dispatch event
+# Workflow to deploy upon a repository dispatch event
 name: Deploy on Repository Dispatch
 
 on:
@@ -16,14 +16,14 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
+          # Pass the PAT as an environment variable
+          envs: |
+            GHCR_PAT=${{ secrets.PAT }}
           script: |
             set -e  # Exit on error
 
-            # Export GHCR_PAT environment variable
-            export GHCR_PAT=${{ secrets.PAT }}
-
             # Login to GHCR
-            echo $GHCR_PAT | docker login ghcr.io -u hungvvu --password-stdin
+            echo "$GHCR_PAT" | docker login ghcr.io -u hungvvu --password-stdin
 
             # Change to the directory where docker-compose.yml is located
             cd /home/huvu/diagscale-todo/diagscale-todo-infra
