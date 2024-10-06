@@ -18,6 +18,7 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
+          envs: GHCR_PAT
           script: |
             set -e  # Exit on error
 
