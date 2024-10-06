@@ -1,7 +1,25 @@
 services:
-  server:
+  traefik:
+    image: traefik:v2.9
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - app-network
+  fetcher:
     image: "${FETCHER_IMAGE_REPO}:${FETCHER_IMAGE_TAG}"
     container_name: fetcher
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fetcher.rule=PathPrefix(`/fetcher`)"
+      - "traefik.http.services.fetcher.loadbalancer.fetcher.port=3000"
+    networks:
+      - app-network
     ports:
       - 3000:3000
     secrets:
