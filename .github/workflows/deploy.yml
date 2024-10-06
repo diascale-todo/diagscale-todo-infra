@@ -1,0 +1,31 @@
+# Workflow to deploy uppon a repository dispatch event
+name: Deploy on Repository Dispatch
+
+on:
+  repository_dispatch:
+    types:
+      - deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to VM using Docker Compose
+        uses: appleboy/ssh-action@v0.1.5  # Updated to latest version
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            set -e  # Exit on error
+
+            # Change to the directory where docker-compose.yml is located
+            cd /home/huvu/diagscale-todo/diagscale-todo-infra
+
+            # Fetch and reset to the latest release branch
+            git fetch --all
+            git checkout release
+            git reset --hard origin/release
+
+            # Pull the latest images and recreate containers
+            docker compose up -d --pull always
